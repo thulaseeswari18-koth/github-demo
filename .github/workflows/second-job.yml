@@ -1,0 +1,35 @@
+name: Build and Push Docker Image to Artifactory
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: vars
+        run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        
+
+      - name: Login to Artifactory Docker Registry
+        run: |
+          echo "${{ secrets.ARTIFACTORY_PASSWORD }}" | docker login ${{ secrets.ARTIFACTORY_URL }} \
+          -u "${{ secrets.ARTIFACTORY_USER }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.ARTIFACTORY_DOCKER_REPO }}/myapp:${{ steps.vars.outputs.TAG }} .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.ARTIFACTORY_DOCKER_REPO }}/myapp:${{ steps.vars.outputs.TAG }}
+
+      - name: Logout
+        run: docker logout ${{ secrets.ARTIFACTORY_URL }}
