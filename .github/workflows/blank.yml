@@ -1,0 +1,10 @@
+name: Github actions workflow
+on: workflow_dispatch
+jobs:
+   first-job:
+     runs-on: arc-small
+     steps:
+       - name: welcome
+         run: echo "github actions demo"
+       - name: bye
+         run: echo "demo complete"
