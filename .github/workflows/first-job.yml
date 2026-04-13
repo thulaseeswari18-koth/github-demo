@@ -2,7 +2,7 @@ name: Github actions workflow
 on: workflow_dispatch
 jobs:
    first-job:
-     runs-on: self-hosted
+     runs-on: windows-runner
      steps:
        - name: welcome
          run: echo "github actions demo"
